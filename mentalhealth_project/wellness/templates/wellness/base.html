@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare – Mental Health Platform</title>
+    <meta name="description" content="MindCare helps students manage their mental health with AI chat support, assessments, counseling, and wellness resources.">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+    <!-- =====================================================
+         TOPNAV — Single, unified responsive navbar
+         Desktop: Logo | Links | User+Logout
+         Mobile:  Logo | Hamburger (links go into drawer)
+    ====================================================== -->
+    <header class="topnav" id="topnav">
+        <div class="topnav-inner">
+
+            <!-- Logo (always visible) -->
+            <a href="{% url 'home' %}" class="topnav-logo" id="nav-logo">
+                <span class="logo-icon"><i class="ph ph-brain"></i></span>
+                <span class="logo-text">MindCare</span>
+            </a>
+
+            <!-- Center nav links – desktop only -->
+            {% if user.is_authenticated %}
+            <nav class="topnav-links" id="topnavLinks" aria-label="Main navigation">
+                {% url 'dashboard' as dashboard_url %}
+                <a href="{{ dashboard_url }}" class="tnav-item {% if request.path == dashboard_url %}active{% endif %}">
+                    <i class="ph ph-chart-bar"></i> Dashboard
+                </a>
+
+                {% url 'chatbot' as chat_url %}
+                <a href="{{ chat_url }}" class="tnav-item {% if request.path == chat_url %}active{% endif %}">
+                    <i class="ph ph-chat-circle"></i> Chat Support
+                </a>
+
+                {% url 'assessment' as assessment_url %}
+                <a href="{{ assessment_url }}" class="tnav-item {% if request.path == assessment_url %}active{% endif %}">
+                    <i class="ph ph-clipboard-text"></i> Assessment
+                </a>
+
+                {% url 'counselor_request' as counselor_url %}
+                <a href="{{ counselor_url|default:'#' }}" class="tnav-item {% if request.path == counselor_url %}active{% endif %}">
+                    <i class="ph ph-phone-call"></i> Counseling
+                </a>
+
+                {% url 'resources' as resources_url %}
+                <a href="{{ resources_url }}" class="tnav-item {% if request.path == resources_url %}active{% endif %}">
+                    <i class="ph ph-heart"></i> Wellness
+                </a>
+
+                <a href="#" class="tnav-item">
+                    <i class="ph ph-trend-up"></i> Progress
+                </a>
+            </nav>
+            {% else %}
+            <nav class="topnav-links" id="topnavLinks" aria-label="Main navigation">
+                <a href="{% url 'login' %}" class="tnav-item {% if request.path == '/login/' %}active{% endif %}">
+                    <i class="ph ph-sign-in"></i> Login
+                </a>
+                <a href="{% url 'register' %}" class="tnav-item {% if request.path == '/register/' %}active{% endif %}">
+                    <i class="ph ph-user-plus"></i> Register
+                </a>
+            </nav>
+            {% endif %}
+
+            <!-- Right side: user info + logout (desktop) -->
+            <div class="topnav-right">
+                {% if user.is_authenticated %}
+                <span class="topnav-email">
+                    <i class="ph ph-user-circle"></i>
+                    {{ user.email|default:user.username }}
+                </span>
+                <form action="{% url 'logout' %}" method="post" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="topnav-logout" id="logout-btn">
+                        <i class="ph ph-sign-out"></i> Logout
+                    </button>
+                </form>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary btn-sm" id="nav-login-btn">Get Started</a>
+                {% endif %}
+
+                <!-- Hamburger – mobile only -->
+                <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+                    <span class="ham-line"></span>
+                    <span class="ham-line"></span>
+                    <span class="ham-line"></span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- =====================================================
+         MOBILE DRAWER SIDEBAR
+    ====================================================== -->
+    <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+
+    <aside class="drawer" id="drawerSidebar" aria-label="Mobile navigation" aria-hidden="true">
+        <!-- Drawer header -->
+        <div class="drawer-header">
+            <a href="{% url 'home' %}" class="topnav-logo">
+                <span class="logo-icon"><i class="ph ph-brain"></i></span>
+                <span class="logo-text">MindCare</span>
+            </a>
+            <button class="drawer-close" id="drawerCloseBtn" aria-label="Close menu">
+                <i class="ph ph-x"></i>
+            </button>
+        </div>
+
+        <!-- Drawer links -->
+        <nav class="drawer-links">
+            {% if user.is_authenticated %}
+                {% url 'dashboard' as dashboard_url %}
+                <a href="{{ dashboard_url }}" class="drawer-item {% if request.path == dashboard_url %}active{% endif %}">
+                    <i class="ph ph-chart-bar"></i> Dashboard
+                </a>
+
+                {% url 'chatbot' as chat_url %}
+                <a href="{{ chat_url }}" class="drawer-item {% if request.path == chat_url %}active{% endif %}">
+                    <i class="ph ph-chat-circle"></i> Chat Support
+                </a>
+
+                {% url 'assessment' as assessment_url %}
+                <a href="{{ assessment_url }}" class="drawer-item {% if request.path == assessment_url %}active{% endif %}">
+                    <i class="ph ph-clipboard-text"></i> Assessment
+                </a>
+
+                {% url 'counselor_request' as counselor_url %}
+                <a href="{{ counselor_url|default:'#' }}" class="drawer-item {% if request.path == counselor_url %}active{% endif %}">
+                    <i class="ph ph-phone-call"></i> Counseling
+                </a>
+
+                {% url 'resources' as resources_url %}
+                <a href="{{ resources_url }}" class="drawer-item {% if request.path == resources_url %}active{% endif %}">
+                    <i class="ph ph-heart"></i> Wellness
+                </a>
+
+                <a href="#" class="drawer-item">
+                    <i class="ph ph-trend-up"></i> Progress
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="drawer-item">
+                    <i class="ph ph-sign-in"></i> Login
+                </a>
+                <a href="{% url 'register' %}" class="drawer-item">
+                    <i class="ph ph-user-plus"></i> Register
+                </a>
+            {% endif %}
+        </nav>
+
+        <!-- Drawer footer: user email + logout -->
+        {% if user.is_authenticated %}
+        <div class="drawer-footer">
+            <div class="drawer-user-email">
+                <i class="ph ph-user-circle"></i>
+                {{ user.email|default:user.username }}
+            </div>
+            <form action="{% url 'logout' %}" method="post" class="logout-form" style="width:100%;">
+                {% csrf_token %}
+                <button type="submit" class="drawer-logout">
+                    <i class="ph ph-sign-out"></i> Logout
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </aside>
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+    <main class="main-content container" id="mainContent">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- animations.js handles fade-in and scroll effects -->
+    <script src="{% static 'js/animations.js' %}"></script>
+
+    <!-- Responsive Navbar Script -->
+    <script>
+        (function () {
+            const hamburger   = document.getElementById('hamburgerBtn');
+            const drawer      = document.getElementById('drawerSidebar');
+            const overlay     = document.getElementById('drawerOverlay');
+            const closeBtn    = document.getElementById('drawerCloseBtn');
+
+            function openDrawer() {
+                drawer.classList.add('open');
+                overlay.classList.add('visible');
+                document.body.classList.add('drawer-open');
+                hamburger.setAttribute('aria-expanded', 'true');
+                drawer.setAttribute('aria-hidden', 'false');
+                overlay.setAttribute('aria-hidden', 'false');
+            }
+
+            function closeDrawer() {
+                drawer.classList.remove('open');
+                overlay.classList.remove('visible');
+                document.body.classList.remove('drawer-open');
+                hamburger.setAttribute('aria-expanded', 'false');
+                drawer.setAttribute('aria-hidden', 'true');
+                overlay.setAttribute('aria-hidden', 'true');
+            }
+
+            hamburger.addEventListener('click', openDrawer);
+            closeBtn.addEventListener('click', closeDrawer);
+            overlay.addEventListener('click', closeDrawer);
+
+            // Close drawer if window resizes to desktop
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 1024) closeDrawer();
+            });
+
+            // Close drawer when a link inside it is clicked
+            drawer.querySelectorAll('.drawer-item').forEach(link => {
+                link.addEventListener('click', closeDrawer);
+            });
+        })();
+    </script>
+
+</body>
+</html>

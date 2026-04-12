@@ -1,0 +1,196 @@
+{% extends 'wellness/base.html' %}
+{% block content %}
+<style>
+    /* Scoped styles to match the precise design */
+    body {
+        background-color: #edf5f5 !important;
+    }
+    
+    .main-content {
+        background-color: #edf5f5 !important;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        margin: 0;
+        max-width: 100% !important;
+    }
+
+    .auth-wrapper {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .form-container {
+        background: #ffffff;
+        width: 100%;
+        max-width: 440px;
+        padding: 3rem 2.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+        text-align: center;
+        border: 1px solid #eaeaea;
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+    }
+
+    .app-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, #2b9b8b, #3388ad);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 32px;
+        box-shadow: 0 4px 12px rgba(43, 155, 139, 0.3);
+    }
+
+    .form-header h2 {
+        font-family: 'Lora', serif;
+        color: #12222b;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-header p {
+        color: #829ba8;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 400;
+        margin: 0;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+        text-align: left;
+    }
+
+    /* Hide standard labels */
+    .form-group label {
+        display: none;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 0.85rem 1.2rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        color: #334155;
+        background-color: #fafafa;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .form-group input::placeholder, .form-group textarea::placeholder {
+        color: #94a3b8;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        border-color: #3b9b8b;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(59, 155, 139, 0.1);
+    }
+
+    .help-text {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .auth-btn {
+        width: 100%;
+        padding: 0.85rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(to right, #389e8e, #3694b7);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.1s;
+        margin-top: 1rem;
+    }
+
+    .auth-btn:hover {
+        opacity: 0.92;
+    }
+    
+    .auth-btn:active {
+        transform: translateY(1px);
+    }
+
+    .auth-footer {
+        margin-top: 1.75rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+
+    .auth-footer a {
+        color: #3b9b8b;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .auth-footer a:hover {
+        color: #2c7a6e;
+        text-decoration: underline;
+    }
+    
+    /* Make UL lists for password validators look hidden or styled nicer */
+    .form-group ul {
+        margin: 0.25rem 0 0 0;
+        padding-left: 1.2rem;
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+</style>
+
+<div class="auth-wrapper">
+    <div class="form-container">
+        <div class="form-header">
+            <div class="app-icon">
+                <i class="ph ph-brain"></i>
+            </div>
+            <h2>Create Account</h2>
+            <p>Start your wellness journey today</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" name="full_name" placeholder="Full Name" required>
+            </div>
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            
+            <button type="submit" class="auth-btn">Create Account</button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

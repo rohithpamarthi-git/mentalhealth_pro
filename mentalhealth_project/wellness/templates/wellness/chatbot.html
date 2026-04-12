@@ -1,0 +1,31 @@
+{% extends 'wellness/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+<div class="chat-container">
+    <div class="chat-header">
+        <h2>Support Chatbot</h2>
+        <p>A safe space to vent and get quick support.</p>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        {% if chat_history %}
+            {% for msg in chat_history %}
+                <div class="message {% if msg.is_bot %}bot-message{% else %}user-message{% endif %}">
+                    <p>{{ msg.text }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="message bot-message">
+                <p>Hello, {{ user.username }}. I'm here to listen. How are you feeling today?</p>
+            </div>
+        {% endif %}
+    </div>
+    <div class="chat-input-area">
+        {% csrf_token %}
+        <input type="text" id="userInput" name="chat_message_input" placeholder="Type your message here..." autocomplete="new-password">
+        <button id="sendBtn" class="btn btn-primary">Send</button>
+    </div>
+</div>
+<script src="{% static 'js/chatbot.js' %}?v=1"></script>
+</div>
+{% endblock %}

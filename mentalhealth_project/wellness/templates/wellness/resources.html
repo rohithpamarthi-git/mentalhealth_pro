@@ -1,0 +1,41 @@
+{% extends 'wellness/base.html' %}
+{% block content %}
+<div class="container">
+    <div class="resources-container">
+        <h2 style="font-size: 2.5rem;">Wellness Resources</h2>
+        <p class="text-muted" style="margin-bottom: 2rem; font-size: 1.1rem;">Explore our curated resources to help you manage your mental well-being.</p>
+        
+        <div class="resources-grid">
+            <div class="resource-card">
+                <h3>Meditation Tips</h3>
+                <ul>
+                    <li>Find a comfortable, quiet space.</li>
+                    <li>Close your eyes and focus on your breath.</li>
+                    <li>When your mind wanders, gently bring it back.</li>
+                    <li>Start with just 5 minutes a day.</li>
+                </ul>
+            </div>
+            
+            <div class="resource-card">
+                <h3>Stress Management</h3>
+                <p style="color: var(--primary-dark); font-weight: 600; margin-bottom: 0.5rem;">The 5-4-3-2-1 Grounding Technique:</p>
+                <ul>
+                    <li>Acknowledge 5 things you can see.</li>
+                    <li>Acknowledge 4 things you can touch.</li>
+                    <li>Acknowledge 3 things you can hear.</li>
+                    <li>Acknowledge 2 things you can smell.</li>
+                    <li>Acknowledge 1 thing you can taste.</li>
+                </ul>
+            </div>
+            
+            <div class="resource-card">
+                <h3>Motivational Corner</h3>
+                <blockquote>
+                    "You are braver than you believe, stronger than you seem, and smarter than you think." 
+                    <footer>- A.A. Milne</footer>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

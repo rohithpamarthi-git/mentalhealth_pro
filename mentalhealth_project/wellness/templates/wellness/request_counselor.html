@@ -1,0 +1,17 @@
+{% extends 'wellness/base.html' %}
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2>Request a Counselor</h2>
+        <p>If you're feeling overwhelmed, our professionals are here to help. Send a request, and we will get back to you securely and privately.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="message">How can we help you?</label>
+                <textarea name="message" id="message" rows="6" class="form-control" placeholder="Share a little bit about what you're going through..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Request</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

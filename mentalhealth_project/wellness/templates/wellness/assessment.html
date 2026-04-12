@@ -1,0 +1,74 @@
+{% extends 'wellness/base.html' %}
+{% block content %}
+<div class="container">
+    <div class="glass-panel assessment-container auto-margins">
+        <h2>Self-Assessment</h2>
+        <p>Please answer the following questions honestly to help us understand your well-being.</p>
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="question-group">
+                <p>1. How often have you felt stressed or overwhelmed in the past week?</p>
+                <div class="options-grid">
+                    <input type="radio" name="stress1" id="s1-0" value="0" required><label for="s1-0">Not at all</label>
+                    <input type="radio" name="stress1" id="s1-1" value="1"><label for="s1-1">Sometimes</label>
+                    <input type="radio" name="stress1" id="s1-2" value="2"><label for="s1-2">Often</label>
+                    <input type="radio" name="stress1" id="s1-3" value="3"><label for="s1-3">Constantly</label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <p>2. How often do you find it hard to relax?</p>
+                <div class="options-grid">
+                    <input type="radio" name="stress2" id="s2-0" value="0" required><label for="s2-0">Not at all</label>
+                    <input type="radio" name="stress2" id="s2-1" value="1"><label for="s2-1">Sometimes</label>
+                    <input type="radio" name="stress2" id="s2-2" value="2"><label for="s2-2">Often</label>
+                    <input type="radio" name="stress2" id="s2-3" value="3"><label for="s2-3">Constantly</label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <p>3. Have you been feeling excessively worried about different things?</p>
+                <div class="options-grid">
+                    <input type="radio" name="anx1" id="a1-0" value="0" required><label for="a1-0">Not at all</label>
+                    <input type="radio" name="anx1" id="a1-1" value="1"><label for="a1-1">Sometimes</label>
+                    <input type="radio" name="anx1" id="a1-2" value="2"><label for="a1-2">Often</label>
+                    <input type="radio" name="anx1" id="a1-3" value="3"><label for="a1-3">Constantly</label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <p>4. Have you experienced sudden feelings of panic?</p>
+                <div class="options-grid">
+                    <input type="radio" name="anx2" id="a2-0" value="0" required><label for="a2-0">Not at all</label>
+                    <input type="radio" name="anx2" id="a2-1" value="1"><label for="a2-1">Sometimes</label>
+                    <input type="radio" name="anx2" id="a2-2" value="2"><label for="a2-2">Often</label>
+                    <input type="radio" name="anx2" id="a2-3" value="3"><label for="a2-3">Constantly</label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <p>5. Have you felt down, depressed, or hopeless?</p>
+                <div class="options-grid">
+                    <input type="radio" name="dep1" id="d1-0" value="0" required><label for="d1-0">Not at all</label>
+                    <input type="radio" name="dep1" id="d1-1" value="1"><label for="d1-1">Sometimes</label>
+                    <input type="radio" name="dep1" id="d1-2" value="2"><label for="d1-2">Often</label>
+                    <input type="radio" name="dep1" id="d1-3" value="3"><label for="d1-3">Constantly</label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <p>6. Do you have little interest or pleasure in doing things?</p>
+                <div class="options-grid">
+                    <input type="radio" name="dep2" id="d2-0" value="0" required><label for="d2-0">Not at all</label>
+                    <input type="radio" name="dep2" id="d2-1" value="1"><label for="d2-1">Sometimes</label>
+                    <input type="radio" name="dep2" id="d2-2" value="2"><label for="d2-2">Often</label>
+                    <input type="radio" name="dep2" id="d2-3" value="3"><label for="d2-3">Constantly</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px; font-size: 1.1rem; padding: 1rem;">Submit Assessment</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'wellness/base.html' %}
+{% block content %}
+<div class="container">
+    <div class="dashboard">
+        <div class="greeting-section">
+            <h2>Welcome back, {{ user.username }} 👋</h2>
+            <p style="font-size: 1.15rem; color: var(--text-secondary);">How are you feeling today? We're here to support you.</p>
+        </div>
+
+        <!-- Quick Action Cards Grid -->
+        <div class="dashboard-action-grid">
+            <a href="{% url 'chatbot' %}" class="action-card card-chat">
+                <div class="card-icon">
+                    <i class="ph ph-chat-circle"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Chat Support</h3>
+                    <p>Talk to our supportive chatbot anytime</p>
+                </div>
+            </a>
+
+            <a href="{% url 'assessment' %}" class="action-card card-assess">
+                <div class="card-icon">
+                    <i class="ph ph-clipboard-text"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Self-Assessment</h3>
+                    <p>Evaluate your stress, anxiety & mood</p>
+                </div>
+            </a>
+
+            <a href="{% url 'counselor_request' %}" class="action-card card-counsel">
+                <div class="card-icon">
+                    <i class="ph ph-phone-call"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Request Counselor</h3>
+                    <p>Connect with a professional counselor</p>
+                </div>
+            </a>
+
+            <a href="{% url 'resources' %}" class="action-card card-wellness">
+                <div class="card-icon">
+                    <i class="ph ph-heart"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Wellness Resources</h3>
+                    <p>Tips for meditation & stress management</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Saved Functionality: Past Assessments Table -->
+        <h3 class="section-title" style="margin-top: 40px; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">Your Past Assessments</h3>
+        {% if assessments %}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Total Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asm in assessments %}
+                    <tr>
+                        <td style="font-weight: 500;">{{ asm.created_at|date:"M d, Y" }}</td>
+                        <td><span class="badge badge-{{ asm.category|slugify|lower }}">{{ asm.category }}</span></td>
+                        <td><strong>{{ asm.total_score }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="glass-panel" style="text-align: center; padding: 3rem;">
+            <p class="text-muted" style="margin: 0; font-size: 1.1rem;">
+                You haven't taken any assessments yet.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

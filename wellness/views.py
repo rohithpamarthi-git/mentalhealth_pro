@@ -135,16 +135,21 @@ def chatbot_api(request):
             try:
                 response = model.generate_content(prompt)
                 
-                # Safe extraction
-                if hasattr(response, 'text') and response.text:
+                # Direct attribute check and safer extraction
+                try:
                     bot_text = response.text
-                else:
+                except (ValueError, AttributeError):
+                    # Fallback to candidates if .text is blocked/unavailable
                     try:
                         bot_text = response.candidates[0].content.parts[0].text
                     except Exception:
                         bot_text = "I'm here for you."
+                
+                if not bot_text or not bot_text.strip():
+                    bot_text = "I'm here for you."
+
             except Exception as e:
-                print(e)
+                print(f"Chatbot Error: {e}")
                 bot_text = "I'm here for you."
 
             # Save bot message

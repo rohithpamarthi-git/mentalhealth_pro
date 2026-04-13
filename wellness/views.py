@@ -115,43 +115,37 @@ def chatbot_api(request):
             # Save user message
             ChatMessage.objects.create(user=request.user, text=user_text, is_bot=False)
 
-            # Generate bot response via Gemini (Using stable SDK for gemini-1.5-flash)
+            # Generate bot response via Gemini
             genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-            print(f"[chatbot_api] Sending prompt to Gemini for user: {request.user.username}")
             
-            system_instruction = (
-                "You are MindCare, a supportive, empathetic, and professional mental health chatbot.\n"
-                "Your goal is to help users feel heard, calm, and supported.\n"
-                "Guidelines:\n"
-                "- Be kind, understanding, and non-judgmental\n"
-                "- Keep responses clear and under 60 words\n"
-                "- Do NOT provide medical diagnosis or prescriptions\n"
-                "- If the user is in distress, gently encourage seeking professional help\n"
-                "- Use simple and comforting language"
-            )
+            prompt = f"""
+            You are MindCare, a supportive mental health chatbot.
 
-            model = genai.GenerativeModel(
-                model_name="gemini-1.5-flash",
-                system_instruction=system_instruction
-            )
+            Rules:
+
+            * Be kind and empathetic
+            * Keep response under 60 words
+            * No medical advice
+
+            User: {user_text}
+            """
+
+            model = genai.GenerativeModel("gemini-1.5-flash")
             
-            response = model.generate_content(user_text)
-            print(f"[chatbot_api] Raw Gemini response: {response}")
-
-            # Extract response safely (User requested logic)
-            bot_text = ""
             try:
-                bot_text = response.text
-            except:
-                try:
-                    # Alternative path for different response structures
-                    bot_text = response.candidates[0].content.parts[0].text
-                except:
-                    bot_text = ""
-
-            if not bot_text or not bot_text.strip():
-                print("[chatbot_api] WARNING: Gemini returned empty response.")
-                bot_text = "I'm here for you, but I couldn't generate a response. Please try again."
+                response = model.generate_content(prompt)
+                
+                # Safe extraction
+                if hasattr(response, 'text') and response.text:
+                    bot_text = response.text
+                else:
+                    try:
+                        bot_text = response.candidates[0].content.parts[0].text
+                    except Exception:
+                        bot_text = "I'm here for you."
+            except Exception as e:
+                print(e)
+                bot_text = "I'm here for you."
 
             # Save bot message
             ChatMessage.objects.create(user=request.user, text=bot_text, is_bot=True)

@@ -9,7 +9,10 @@ import os
 from django.http import JsonResponse
 from django.contrib import messages
 from django.conf import settings
-import google.generativeai as genai
+from google import genai
+from google.genai import types
+from dotenv import load_dotenv
+load_dotenv()
 
 def home(request):
     if request.user.is_authenticated:
@@ -103,6 +106,39 @@ def chatbot(request):
     chat_history = ChatMessage.objects.filter(user=request.user).order_by('created_at')
     return render(request, 'wellness/chatbot.html', {'chat_history': chat_history})
 
+# Initialize Gemini Client at module level
+GENAI_CLIENT = None
+
+def get_genai_client():
+    global GENAI_CLIENT
+    if GENAI_CLIENT is None:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            try:
+                GENAI_CLIENT = genai.Client(api_key=api_key)
+                
+            except Exception as e:
+                print(f"Error initializing GenAI Client: {e}")
+    return GENAI_CLIENT
+
+def get_chatbot_config():
+    # Centralized configuration for the chatbot behavior
+    system_instruction = (
+        "You are a Support Chatbot for the MindCare platform. Your sole purpose is to provide a safe space "
+        "to discuss mental health, psychology, emotions, and well-being.\n\n"
+        "Strict Rules:\n"
+        "1. BOUNDARY ENFORCEMENT: You are strictly limited to mental health and psychology. "
+        "If a user asks about anything unrelated, you MUST politely decline.\n"
+        "2. Always be deeply empathetic, professional, and validating.\n"
+        "3. Do NOT provide medical diagnoses.\n"
+        "4. Keep responses concise, conversational, and split into small easily readable paragraphs."
+    )
+    return types.GenerateContentConfig(
+        system_instruction=system_instruction,
+        max_output_tokens=500,
+        temperature=0.7,
+    )
+
 @login_required
 def chatbot_api(request):
     if request.method == 'POST':
@@ -115,47 +151,41 @@ def chatbot_api(request):
             # Save user message
             ChatMessage.objects.create(user=request.user, text=user_text, is_bot=False)
 
-            # Generate bot response via Gemini
-            genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-            
-            prompt = f"""
-            You are MindCare, a supportive mental health chatbot.
-
-            Rules:
-
-            * Be kind and empathetic
-            * Keep response under 60 words
-            * No medical advice
-
-            User: {user_text}
-            """
-
-            model = genai.GenerativeModel("gemini-1.5-flash")
-            
-            try:
-                response = model.generate_content(prompt)
-                
-                # Direct attribute check and safer extraction
+            client = get_genai_client()
+            if not client:
+                print("Chatbot Error: GEMINI_API_KEY not configured correctly.")
+                bot_text = "I'm here for you, but my AI core is currently offline. Please check the API configuration."
+            else:
                 try:
-                    bot_text = response.text
-                except (ValueError, AttributeError):
-                    # Fallback to candidates if .text is blocked/unavailable
-                    try:
-                        bot_text = response.candidates[0].content.parts[0].text
-                    except Exception:
-                        bot_text = "I'm here for you."
+                    # Use the new SDK syntax for generation
+                    response = client.models.generate_content(
+                        model="gemini-flash-latest",
+                        contents=user_text,
+                        config=get_chatbot_config()
+                    )
+                    
+                    if response.text:
+                        bot_text = response.text.strip()
+                    else:
+                        bot_text = "I'm here to listen. Could you tell me more about that?"
                 
-                if not bot_text or not bot_text.strip():
-                    bot_text = "I'm here for you."
-
-            except Exception as e:
-                print(f"Chatbot Error: {e}")
-                bot_text = "I'm here for you."
+                except Exception as e:
+                    # Log full error for server-side debugging
+                    print(f"Chatbot Generation Error ({type(e).__name__}): {e}")
+                    traceback.print_exc()
+                    
+                    # Provide slightly more specific user-facing feedback if it's an API error
+                    err_msg = str(e).lower()
+                    if "api_key" in err_msg or "authentication" in err_msg or "permission" in err_msg or "403" in err_msg:
+                        bot_text = "I'm having trouble connecting to my AI brain (API key issue). Please ensure a valid API key is set."
+                    elif "quota" in err_msg or "rate limit" in err_msg or "429" in err_msg:
+                        bot_text = "I've been talking a bit too much lately! Let's take a short break and try again in a few minutes."
+                    else:
+                        bot_text = "I'm sorry, I'm having trouble processing that right now. I'm still here for you."
 
             # Save bot message
             ChatMessage.objects.create(user=request.user, text=bot_text, is_bot=True)
             return JsonResponse({'response': bot_text})
-
 
         except json.JSONDecodeError as e:
             print(f"[chatbot_api] JSON decode error: {e}")

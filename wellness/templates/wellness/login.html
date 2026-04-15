@@ -1,13 +1,8 @@
 {% extends 'wellness/base.html' %}
 {% block content %}
 <style>
-    /* Scoped styles to match the precise design */
-    body {
-        background-color: #edf5f5 !important; /* Soft, light teal/blue background */
-    }
-    
+    /* Clean overrides for Auth pages */
     .main-content {
-        background-color: #edf5f5 !important;
         min-height: 100vh;
         display: flex;
         align-items: center;
@@ -30,43 +25,26 @@
         width: 100%;
         max-width: 440px;
         padding: 3rem 2.5rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-hover);
         text-align: center;
-        border: 1px solid #eaeaea;
+        border: 1px solid var(--secondary-light);
     }
 
     .form-header {
-        margin-bottom: 2rem;
-    }
-
-    .app-icon {
-        width: 60px;
-        height: 60px;
-        margin: 0 auto 1.5rem;
-        background: linear-gradient(135deg, #2b9b8b, #3388ad);
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 32px;
-        box-shadow: 0 4px 12px rgba(43, 155, 139, 0.3);
+        margin-bottom: 2.5rem;
     }
 
     .form-header h2 {
-        font-family: 'Lora', serif;
-        color: #12222b;
-        font-size: 1.6rem;
-        font-weight: 700;
+        color: var(--text-primary);
+        font-size: 1.85rem;
+        font-weight: 800;
         margin-bottom: 0.5rem;
     }
 
     .form-header p {
-        color: #829ba8;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.95rem;
-        font-weight: 400;
+        color: var(--text-muted);
+        font-size: 1rem;
         margin: 0;
     }
 
@@ -75,74 +53,23 @@
         text-align: left;
     }
 
-    /* Hide standard labels to match the placeholder-based design */
     .form-group label {
         display: none;
     }
 
-    .form-group input {
-        width: 100%;
-        padding: 0.85rem 1.2rem;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.95rem;
-        color: #334155;
-        background-color: #fafafa;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        transition: all 0.2s ease;
-        outline: none;
-        box-sizing: border-box;
-    }
-
-    .form-group input::placeholder {
-        color: #94a3b8;
-    }
-
-    .form-group input:focus {
-        border-color: #3b9b8b;
-        background-color: #ffffff;
-        box-shadow: 0 0 0 3px rgba(59, 155, 139, 0.1);
-    }
-
-    .auth-btn {
-        width: 100%;
-        padding: 0.85rem;
-        font-family: 'Inter', sans-serif;
-        font-size: 1rem;
-        font-weight: 600;
-        color: white;
-        background: linear-gradient(to right, #389e8e, #3694b7);
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: opacity 0.2s, transform 0.1s;
-        margin-top: 1rem;
-    }
-
-    .auth-btn:hover {
-        opacity: 0.92;
-    }
-    
-    .auth-btn:active {
-        transform: translateY(1px);
-    }
-
     .auth-footer {
-        margin-top: 1.75rem;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.9rem;
-        color: #64748b;
+        margin-top: 2rem;
+        font-size: 0.95rem;
+        color: var(--text-muted);
     }
 
     .auth-footer a {
-        color: #3b9b8b;
+        color: var(--primary-color);
         text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s;
+        font-weight: 600;
     }
 
     .auth-footer a:hover {
-        color: #2c7a6e;
         text-decoration: underline;
     }
 </style>
@@ -150,8 +77,8 @@
 <div class="auth-wrapper">
     <div class="form-container">
         <div class="form-header">
-            <div class="app-icon">
-                <i class="ph ph-brain"></i>
+            <div class="app-icon" style="width: 64px; height: 64px; margin: 0 auto 1.5rem; background: var(--primary-color); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <i class="ph-fill ph-leaf"></i>
             </div>
             <h2>Welcome Back</h2>
             <p>Sign in to access your mental health dashboard</p>
@@ -170,7 +97,7 @@
                 </div>
             {% endfor %}
             
-            <button type="submit" class="auth-btn">Sign In</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; margin-top: 1rem;">Sign In</button>
         </form>
         
         <div class="auth-footer">

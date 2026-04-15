@@ -76,7 +76,7 @@ Create a `.env` file in the project root (never commit this):
 ```
 SECRET_KEY=your_django_secret_key
 GEMINI_API_KEY=your_google_gemini_api_key
-DEBUG=True
+DEBUG=False
 ```
 
 ## 📄 License

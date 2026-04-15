@@ -2,68 +2,108 @@
 {% block content %}
 <div class="container">
     <div class="glass-panel assessment-container auto-margins">
-        <h2>Self-Assessment</h2>
+        <h2><i class="ph-fill ph-clipboard-text" style="color: var(--primary-color); margin-right: 8px; vertical-align: middle;"></i>Self-Assessment</h2>
         <p>Please answer the following questions honestly to help us understand your well-being.</p>
         <form method="post">
             {% csrf_token %}
             
             <div class="question-group">
-                <p>1. How often have you felt stressed or overwhelmed in the past week?</p>
+                <p>1. How often have you felt overwhelmed or stressed in the past week?</p>
                 <div class="options-grid">
-                    <input type="radio" name="stress1" id="s1-0" value="0" required><label for="s1-0">Not at all</label>
-                    <input type="radio" name="stress1" id="s1-1" value="1"><label for="s1-1">Sometimes</label>
-                    <input type="radio" name="stress1" id="s1-2" value="2"><label for="s1-2">Often</label>
-                    <input type="radio" name="stress1" id="s1-3" value="3"><label for="s1-3">Constantly</label>
+                    <input type="radio" name="q1" id="q1-0" value="0" required><label for="q1-0">Not at all</label>
+                    <input type="radio" name="q1" id="q1-1" value="1"><label for="q1-1">Sometimes</label>
+                    <input type="radio" name="q1" id="q1-2" value="2"><label for="q1-2">Often</label>
+                    <input type="radio" name="q1" id="q1-3" value="3"><label for="q1-3">Constantly</label>
                 </div>
             </div>
 
             <div class="question-group">
-                <p>2. How often do you find it hard to relax?</p>
+                <p>2. How would you rate your sleep quality over the last few nights?</p>
                 <div class="options-grid">
-                    <input type="radio" name="stress2" id="s2-0" value="0" required><label for="s2-0">Not at all</label>
-                    <input type="radio" name="stress2" id="s2-1" value="1"><label for="s2-1">Sometimes</label>
-                    <input type="radio" name="stress2" id="s2-2" value="2"><label for="s2-2">Often</label>
-                    <input type="radio" name="stress2" id="s2-3" value="3"><label for="s2-3">Constantly</label>
+                    <input type="radio" name="q2" id="q2-0" value="0" required><label for="q2-0">Great</label>
+                    <input type="radio" name="q2" id="q2-1" value="1"><label for="q2-1">Good</label>
+                    <input type="radio" name="q2" id="q2-2" value="2"><label for="q2-2">Fair</label>
+                    <input type="radio" name="q2" id="q2-3" value="3"><label for="q2-3">Poor</label>
                 </div>
             </div>
 
             <div class="question-group">
-                <p>3. Have you been feeling excessively worried about different things?</p>
+                <p>3. Have you been feeling down, depressed, or hopeless?</p>
                 <div class="options-grid">
-                    <input type="radio" name="anx1" id="a1-0" value="0" required><label for="a1-0">Not at all</label>
-                    <input type="radio" name="anx1" id="a1-1" value="1"><label for="a1-1">Sometimes</label>
-                    <input type="radio" name="anx1" id="a1-2" value="2"><label for="a1-2">Often</label>
-                    <input type="radio" name="anx1" id="a1-3" value="3"><label for="a1-3">Constantly</label>
+                    <input type="radio" name="q3" id="q3-0" value="0" required><label for="q3-0">Not at all</label>
+                    <input type="radio" name="q3" id="q3-1" value="1"><label for="q3-1">Sometimes</label>
+                    <input type="radio" name="q3" id="q3-2" value="2"><label for="q3-2">Often</label>
+                    <input type="radio" name="q3" id="q3-3" value="3"><label for="q3-3">Constantly</label>
                 </div>
             </div>
 
             <div class="question-group">
-                <p>4. Have you experienced sudden feelings of panic?</p>
+                <p>4. Do you find it difficult to concentrate on daily tasks?</p>
                 <div class="options-grid">
-                    <input type="radio" name="anx2" id="a2-0" value="0" required><label for="a2-0">Not at all</label>
-                    <input type="radio" name="anx2" id="a2-1" value="1"><label for="a2-1">Sometimes</label>
-                    <input type="radio" name="anx2" id="a2-2" value="2"><label for="a2-2">Often</label>
-                    <input type="radio" name="anx2" id="a2-3" value="3"><label for="a2-3">Constantly</label>
+                    <input type="radio" name="q4" id="q4-0" value="0" required><label for="q4-0">Not at all</label>
+                    <input type="radio" name="q4" id="q4-1" value="1"><label for="q4-1">Sometimes</label>
+                    <input type="radio" name="q4" id="q4-2" value="2"><label for="q4-2">Often</label>
+                    <input type="radio" name="q4" id="q4-3" value="3"><label for="q4-3">Constantly</label>
                 </div>
             </div>
 
             <div class="question-group">
-                <p>5. Have you felt down, depressed, or hopeless?</p>
+                <p>5. How often have you felt physically exhausted or low on energy?</p>
                 <div class="options-grid">
-                    <input type="radio" name="dep1" id="d1-0" value="0" required><label for="d1-0">Not at all</label>
-                    <input type="radio" name="dep1" id="d1-1" value="1"><label for="d1-1">Sometimes</label>
-                    <input type="radio" name="dep1" id="d1-2" value="2"><label for="d1-2">Often</label>
-                    <input type="radio" name="dep1" id="d1-3" value="3"><label for="d1-3">Constantly</label>
+                    <input type="radio" name="q5" id="q5-0" value="0" required><label for="q5-0">Not at all</label>
+                    <input type="radio" name="q5" id="q5-1" value="1"><label for="q5-1">Sometimes</label>
+                    <input type="radio" name="q5" id="q5-2" value="2"><label for="q5-2">Often</label>
+                    <input type="radio" name="q5" id="q5-3" value="3"><label for="q5-3">Constantly</label>
                 </div>
             </div>
 
             <div class="question-group">
-                <p>6. Do you have little interest or pleasure in doing things?</p>
+                <p>6. Have you felt excessively worried about various things?</p>
                 <div class="options-grid">
-                    <input type="radio" name="dep2" id="d2-0" value="0" required><label for="d2-0">Not at all</label>
-                    <input type="radio" name="dep2" id="d2-1" value="1"><label for="d2-1">Sometimes</label>
-                    <input type="radio" name="dep2" id="d2-2" value="2"><label for="d2-2">Often</label>
-                    <input type="radio" name="dep2" id="d2-3" value="3"><label for="d2-3">Constantly</label>
+                    <input type="radio" name="q6" id="q6-0" value="0" required><label for="q6-0">Not at all</label>
+                    <input type="radio" name="q6" id="q6-1" value="1"><label for="q6-1">Sometimes</label>
+                    <input type="radio" name="q6" id="q6-2" value="2"><label for="q6-2">Often</label>
+                    <input type="radio" name="q6" id="q6-3" value="3"><label for="q6-3">Constantly</label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <p>7. Have you felt lonely or disconnected from others?</p>
+                <div class="options-grid">
+                    <input type="radio" name="q7" id="q7-0" value="0" required><label for="q7-0">Not at all</label>
+                    <input type="radio" name="q7" id="q7-1" value="1"><label for="q7-1">Sometimes</label>
+                    <input type="radio" name="q7" id="q7-2" value="2"><label for="q7-2">Often</label>
+                    <input type="radio" name="q7" id="q7-3" value="3"><label for="q7-3">Constantly</label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <p>8. Have you experienced physical tension, like headaches or muscle pain?</p>
+                <div class="options-grid">
+                    <input type="radio" name="q8" id="q8-0" value="1" required><label for="q8-0">Not at all</label>
+                    <input type="radio" name="q8" id="q8-1" value="1"><label for="q8-1">Sometimes</label>
+                    <input type="radio" name="q8" id="q8-2" value="2"><label for="q8-2">Often</label>
+                    <input type="radio" name="q8" id="q8-3" value="3"><label for="q8-3">Constantly</label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <p>9. Has your appetite changed significantly (eating much more or less)?</p>
+                <div class="options-grid">
+                    <input type="radio" name="q9" id="q9-0" value="0" required><label for="q9-0">Not at all</label>
+                    <input type="radio" name="q9" id="q9-1" value="1"><label for="q9-1">Sometimes</label>
+                    <input type="radio" name="q9" id="q9-2" value="2"><label for="q9-2">Often</label>
+                    <input type="radio" name="q9" id="q9-3" value="3"><label for="q9-3">Constantly</label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <p>10. Have you lost interest in activities you usually enjoy?</p>
+                <div class="options-grid">
+                    <input type="radio" name="q10" id="q10-0" value="0" required><label for="q10-0">Not at all</label>
+                    <input type="radio" name="q10" id="q10-1" value="1"><label for="q10-1">Sometimes</label>
+                    <input type="radio" name="q10" id="q10-2" value="2"><label for="q10-2">Often</label>
+                    <input type="radio" name="q10" id="q10-3" value="3"><label for="q10-3">Constantly</label>
                 </div>
             </div>
 

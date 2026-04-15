@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MindCare – Mental Health Platform</title>
-    <meta name="description" content="MindCare helps students manage their mental health with AI chat support, assessments, counseling, and wellness resources.">
+    <meta name="description"
+        content="MindCare helps students manage their mental health with AI chat support, assessments, counseling, and wellness resources.">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/dist/index.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
+
 <body>
+
 
     <!-- =====================================================
          TOPNAV — Single, unified responsive navbar
@@ -24,7 +30,7 @@
 
             <!-- Logo (always visible) -->
             <a href="{% url 'home' %}" class="topnav-logo" id="nav-logo">
-                <span class="logo-icon"><i class="ph ph-brain"></i></span>
+                <i class="ph-fill ph-leaf" style="color: var(--primary-color); margin-right: 8px;"></i>
                 <span class="logo-text">MindCare</span>
             </a>
 
@@ -42,12 +48,14 @@
                 </a>
 
                 {% url 'assessment' as assessment_url %}
-                <a href="{{ assessment_url }}" class="tnav-item {% if request.path == assessment_url %}active{% endif %}">
+                <a href="{{ assessment_url }}"
+                    class="tnav-item {% if request.path == assessment_url %}active{% endif %}">
                     <i class="ph ph-clipboard-text"></i> Assessment
                 </a>
 
                 {% url 'counselor_request' as counselor_url %}
-                <a href="{{ counselor_url|default:'#' }}" class="tnav-item {% if request.path == counselor_url %}active{% endif %}">
+                <a href="{{ counselor_url|default:'#' }}"
+                    class="tnav-item {% if request.path == counselor_url %}active{% endif %}">
                     <i class="ph ph-phone-call"></i> Counseling
                 </a>
 
@@ -56,7 +64,8 @@
                     <i class="ph ph-heart"></i> Wellness
                 </a>
 
-                <a href="#" class="tnav-item">
+                {% url 'progress' as progress_url %}
+                <a href="{{ progress_url }}" class="tnav-item {% if request.path == progress_url %}active{% endif %}">
                     <i class="ph ph-trend-up"></i> Progress
                 </a>
             </nav>
@@ -108,7 +117,7 @@
         <!-- Drawer header -->
         <div class="drawer-header">
             <a href="{% url 'home' %}" class="topnav-logo">
-                <span class="logo-icon"><i class="ph ph-brain"></i></span>
+                <i class="ph-fill ph-leaf" style="color: var(--primary-color); margin-right: 8px;"></i>
                 <span class="logo-text">MindCare</span>
             </a>
             <button class="drawer-close" id="drawerCloseBtn" aria-label="Close menu">
@@ -119,41 +128,43 @@
         <!-- Drawer links -->
         <nav class="drawer-links">
             {% if user.is_authenticated %}
-                {% url 'dashboard' as dashboard_url %}
-                <a href="{{ dashboard_url }}" class="drawer-item {% if request.path == dashboard_url %}active{% endif %}">
-                    <i class="ph ph-chart-bar"></i> Dashboard
-                </a>
+            {% url 'dashboard' as dashboard_url %}
+            <a href="{{ dashboard_url }}" class="drawer-item {% if request.path == dashboard_url %}active{% endif %}">
+                <i class="ph ph-chart-bar"></i> Dashboard
+            </a>
 
-                {% url 'chatbot' as chat_url %}
-                <a href="{{ chat_url }}" class="drawer-item {% if request.path == chat_url %}active{% endif %}">
-                    <i class="ph ph-chat-circle"></i> Chat Support
-                </a>
+            {% url 'chatbot' as chat_url %}
+            <a href="{{ chat_url }}" class="drawer-item {% if request.path == chat_url %}active{% endif %}">
+                <i class="ph ph-chat-circle"></i> Chat Support
+            </a>
 
-                {% url 'assessment' as assessment_url %}
-                <a href="{{ assessment_url }}" class="drawer-item {% if request.path == assessment_url %}active{% endif %}">
-                    <i class="ph ph-clipboard-text"></i> Assessment
-                </a>
+            {% url 'assessment' as assessment_url %}
+            <a href="{{ assessment_url }}" class="drawer-item {% if request.path == assessment_url %}active{% endif %}">
+                <i class="ph ph-clipboard-text"></i> Assessment
+            </a>
 
-                {% url 'counselor_request' as counselor_url %}
-                <a href="{{ counselor_url|default:'#' }}" class="drawer-item {% if request.path == counselor_url %}active{% endif %}">
-                    <i class="ph ph-phone-call"></i> Counseling
-                </a>
+            {% url 'counselor_request' as counselor_url %}
+            <a href="{{ counselor_url|default:'#' }}"
+                class="drawer-item {% if request.path == counselor_url %}active{% endif %}">
+                <i class="ph ph-phone-call"></i> Counseling
+            </a>
 
-                {% url 'resources' as resources_url %}
-                <a href="{{ resources_url }}" class="drawer-item {% if request.path == resources_url %}active{% endif %}">
-                    <i class="ph ph-heart"></i> Wellness
-                </a>
+            {% url 'resources' as resources_url %}
+            <a href="{{ resources_url }}" class="drawer-item {% if request.path == resources_url %}active{% endif %}">
+                <i class="ph ph-heart"></i> Wellness
+            </a>
 
-                <a href="#" class="drawer-item">
-                    <i class="ph ph-trend-up"></i> Progress
-                </a>
+            {% url 'progress' as progress_url %}
+            <a href="{{ progress_url }}" class="drawer-item {% if request.path == progress_url %}active{% endif %}">
+                <i class="ph ph-trend-up"></i> Progress
+            </a>
             {% else %}
-                <a href="{% url 'login' %}" class="drawer-item">
-                    <i class="ph ph-sign-in"></i> Login
-                </a>
-                <a href="{% url 'register' %}" class="drawer-item">
-                    <i class="ph ph-user-plus"></i> Register
-                </a>
+            <a href="{% url 'login' %}" class="drawer-item">
+                <i class="ph ph-sign-in"></i> Login
+            </a>
+            <a href="{% url 'register' %}" class="drawer-item">
+                <i class="ph ph-user-plus"></i> Register
+            </a>
             {% endif %}
         </nav>
 
@@ -179,11 +190,11 @@
     ====================================================== -->
     <main class="main-content container" id="mainContent">
         {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            </div>
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
         {% endif %}
 
         {% block content %}{% endblock %}
@@ -195,10 +206,10 @@
     <!-- Responsive Navbar Script -->
     <script>
         (function () {
-            const hamburger   = document.getElementById('hamburgerBtn');
-            const drawer      = document.getElementById('drawerSidebar');
-            const overlay     = document.getElementById('drawerOverlay');
-            const closeBtn    = document.getElementById('drawerCloseBtn');
+            const hamburger = document.getElementById('hamburgerBtn');
+            const drawer = document.getElementById('drawerSidebar');
+            const overlay = document.getElementById('drawerOverlay');
+            const closeBtn = document.getElementById('drawerCloseBtn');
 
             function openDrawer() {
                 drawer.classList.add('open');
@@ -235,4 +246,5 @@
     </script>
 
 </body>
+
 </html>

@@ -5,11 +5,11 @@
     <p>Thank you for completing the assessment. Your results have been saved.</p>
     
     <div class="score-card">
-        <h3>Total Score: <span class="score-highlight">{{ assessment.total_score }}</span> / 18</h3>
-        <p>Category: <span class="badge badge-{{ assessment.category|lower }}">{{ assessment.category }}</span></p>
+        <h3>Total Score: <span class="score-highlight">{{ assessment.total_score }}</span> / 10</h3>
+        <p>Category: <span class="badge badge-{{ assessment.category|slugify|lower }}">{{ assessment.category }}</span></p>
     </div>
 
-    {% if assessment.category == 'High' %}
+    {% if assessment.total_score >= 8 %}
     <div class="alert alert-warning" style="margin-top: 20px;">
         <strong>Warning:</strong> Your score suggests you might be experiencing significant distress. We strongly recommend speaking with a counselor.
     </div>

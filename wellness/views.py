@@ -63,37 +63,47 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    assessments = Assessment.objects.filter(user=request.user).order_by('-created_at')
+    raw_assessments = Assessment.objects.filter(user=request.user).order_by('-created_at')
+    assessments = []
+    for asm in raw_assessments:
+        # Determine if it's a legacy record and normalize for display
+        if "Stress" not in asm.category or asm.total_score > 10:
+            normalized = round(asm.total_score * 10 / 18)
+            asm.total_score = normalized
+            if normalized >= 8:
+                asm.category = "High Stress"
+            elif normalized >= 4:
+                asm.category = "Moderate Stress"
+            else:
+                asm.category = "Low Stress"
+        assessments.append(asm)
     return render(request, 'wellness/dashboard.html', {'assessments': assessments})
 
 @login_required
 def assessment(request):
     if request.method == 'POST':
-        # Simple scoring logic: each question is 0-3
-        stress1 = int(request.POST.get('stress1', 0))
-        stress2 = int(request.POST.get('stress2', 0))
-        anx1 = int(request.POST.get('anx1', 0))
-        anx2 = int(request.POST.get('anx2', 0))
-        dep1 = int(request.POST.get('dep1', 0))
-        dep2 = int(request.POST.get('dep2', 0))
+        # Sum raw scores (0-3 for each of 10 questions)
+        raw_total = 0
+        for i in range(1, 11):
+            raw_total += int(request.POST.get(f'q{i}', 0))
 
-        stress_score = stress1 + stress2
-        anxiety_score = anx1 + anx2
-        depression_score = dep1 + dep2
-        total_score = stress_score + anxiety_score + depression_score
+        # Normalize to 10-point scale: (raw_total / 30) * 10 = raw_total / 3
+        # We'll store it as an integer 0-10
+        total_score = min(10, round(raw_total / 3))
 
-        category = "Low"
-        if total_score > 12:
-            category = "High"
+        # New category logic (0-3 Low, 4-7 Moderate, 8-10 High)
+        category = "Low Stress"
+        if total_score >= 8:
+            category = "High Stress"
             messages.warning(request, "Your score is high. We strongly recommend speaking with a counselor.")
-        elif total_score > 6:
-            category = "Medium"
+        elif total_score >= 4:
+            category = "Moderate Stress"
 
         assessment_record = Assessment.objects.create(
             user=request.user,
-            stress_score=stress_score,
-            anxiety_score=anxiety_score,
-            depression_score=depression_score,
+            stress_score=0, # Deprecated but kept for model compatibility
+            anxiety_score=0,
+            depression_score=0,
             total_score=total_score,
             category=category
         )
@@ -212,5 +222,64 @@ def counselor_request(request):
 @login_required
 def resources(request):
     return render(request, 'wellness/resources.html')
+
+
+@login_required
+def progress_view(request):
+    raw_assessments = Assessment.objects.filter(user=request.user).order_by('-created_at')
+    
+    # Normalize historical data on-the-fly for display
+    # Logic: if record is old (max 18), normalize to 10. 
+    # Since we can't be sure if 3 was 3/18 or 3/10, we'll check the category label 
+    # OR just assume based on a certain date or if the category doesn't contain "Stress" (new ones do)
+    
+    assessments = []
+    for asm in raw_assessments:
+        # Determine if it's a legacy record
+        is_legacy = "Stress" not in asm.category or asm.total_score > 10
+        
+        if is_legacy:
+            # Normalize 0-18 to 0-10
+            normalized = round(asm.total_score * 10 / 18)
+            asm.total_score = normalized
+            # Update label to match new scale for consistency
+            if normalized >= 8:
+                asm.category = "High Stress"
+            elif normalized >= 4:
+                asm.category = "Moderate Stress"
+            else:
+                asm.category = "Low Stress"
+        assessments.append(asm)
+
+    total_assessments = len(assessments)
+    avg_score = 0
+    avg_label = "N/A"
+    last_assessment = None
+    chart_data = []
+
+    if total_assessments > 0:
+        total_sum = sum(asm.total_score for asm in assessments)
+        avg_score = round(total_sum / total_assessments, 1)
+        
+        if avg_score >= 8:
+            avg_label = "High Stress"
+        elif avg_score >= 4:
+            avg_label = "Moderate Stress"
+        else:
+            avg_label = "Low Stress"
+        
+        last_assessment = assessments[0].created_at
+        recent_assessments = assessments[:10][::-1]
+        chart_data = [asm.total_score for asm in recent_assessments]
+
+    context = {
+        'assessments': assessments,
+        'total_assessments': total_assessments,
+        'avg_score': avg_score,
+        'avg_label': avg_label,
+        'last_assessment': last_assessment,
+        'chart_data': chart_data,
+    }
+    return render(request, 'wellness/progress.html', context)
 
 

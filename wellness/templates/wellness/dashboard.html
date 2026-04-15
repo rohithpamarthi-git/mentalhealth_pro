@@ -3,7 +3,7 @@
 <div class="container">
     <div class="dashboard">
         <div class="greeting-section">
-            <h2>Welcome back, {{ user.username }} 👋</h2>
+            <h2>Welcome back, {{ user.get_full_name|default:user.username }} 👋</h2>
             <p style="font-size: 1.15rem; color: var(--text-secondary);">How are you feeling today? We're here to support you.</p>
         </div>
 
@@ -31,7 +31,7 @@
 
             <a href="{% url 'counselor_request' %}" class="action-card card-counsel">
                 <div class="card-icon">
-                    <i class="ph ph-phone-call"></i>
+                    <i class="ph ph-users"></i>
                 </div>
                 <div class="card-content">
                     <h3>Request Counselor</h3>
@@ -41,7 +41,7 @@
 
             <a href="{% url 'resources' %}" class="action-card card-wellness">
                 <div class="card-icon">
-                    <i class="ph ph-heart"></i>
+                    <i class="ph ph-plant"></i>
                 </div>
                 <div class="card-content">
                     <h3>Wellness Resources</h3>
@@ -67,7 +67,7 @@
                     <tr>
                         <td style="font-weight: 500;">{{ asm.created_at|date:"M d, Y" }}</td>
                         <td><span class="badge badge-{{ asm.category|slugify|lower }}">{{ asm.category }}</span></td>
-                        <td><strong>{{ asm.total_score }}</strong></td>
+                        <td><strong>{{ asm.total_score }} / 10</strong></td>
                     </tr>
                     {% endfor %}
                 </tbody>

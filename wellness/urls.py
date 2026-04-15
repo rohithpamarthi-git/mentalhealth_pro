@@ -12,4 +12,5 @@ urlpatterns = [
     path('chatbot/api/', views.chatbot_api, name='chatbot_api'),
     path('counselor/', views.counselor_request, name='counselor_request'),
     path('resources/', views.resources, name='resources'),
+    path('progress/', views.progress_view, name='progress'),
 ]

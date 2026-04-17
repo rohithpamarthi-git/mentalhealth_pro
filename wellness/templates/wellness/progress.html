@@ -10,9 +10,9 @@
         </header>
 
         <!-- Top Section: Mood Tracker & Stress Indicator -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+        <div class="progress-top-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
             <!-- Mood Tracker Card -->
-            <div class="glass-panel" style="padding: 2rem;">
+            <div class="glass-panel mood-tracker-card" style="padding: 2rem;">
                 <h3 style="margin-bottom: 1rem;"><i class="ph ph-mask-happy" style="color: var(--secondary-color); margin-right: 8px;"></i>Daily Mood Tracker</h3>
                 <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 1.5rem;">How are you feeling today? Tap an emoji to log your mood.</p>
                 
@@ -31,7 +31,7 @@
             </div>
 
             <!-- Stress Indicator Card -->
-            <div class="glass-panel" style="padding: 2rem;">
+            <div class="glass-panel stress-card" style="padding: 2rem;">
                 <h3 style="margin-bottom: 1rem;"><i class="ph ph-heartbeat" style="color: #ef4444; margin-right: 8px;"></i>Overall Stress Level</h3>
                 <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 1.5rem;">Calculated based on your recent assessments and daily mood.</p>
                 
@@ -153,6 +153,45 @@
         background: var(--primary-light);
         border-color: var(--primary-color);
         transform: scale(1.15);
+    }
+    
+    /* Responsive Fix for Mood Tracker */
+    .mood-tracker-card form {
+        flex-wrap: wrap;
+    }
+    
+    @media (max-width: 768px) {
+        .mood-tracker-card form {
+            justify-content: center !important;
+            gap: 1.5rem !important;
+        }
+    }
+    @media (max-width: 480px) {
+        .mood-tracker-card {
+            padding: 1.5rem !important;
+        }
+        .mood-btn {
+            font-size: 1.2rem;
+            padding: 2px;
+        }
+    }
+
+    /* Overall Spacing Fixes */
+    .progress-container {
+        padding: 0 1rem; /* Prevent cards from touching mobile edges */
+    }
+    
+    .stress-card {
+        margin: 2px; /* Buffer for border-radius and shadow visibility */
+    }
+
+    @media (max-width: 768px) {
+        .progress-top-grid {
+            gap: 1rem !important;
+        }
+        .progress-container {
+            padding: 0 0.5rem;
+        }
     }
 </style>
 

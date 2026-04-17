@@ -1,11 +1,55 @@
 {% extends 'wellness/base.html' %}
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <div class="container animate-fade-in">
     <div class="progress-container">
         <header class="section-header" style="margin-bottom: 2.5rem;">
             <h2 style="font-size: 2.5rem;"><i class="ph-fill ph-trend-up" style="color: var(--primary-color); margin-right: 12px; vertical-align: middle;"></i>Your Progress</h2>
             <p class="text-muted" style="font-size: 1.15rem;">Track your mental health journey and mood trends over time.</p>
         </header>
+
+        <!-- Top Section: Mood Tracker & Stress Indicator -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+            <!-- Mood Tracker Card -->
+            <div class="glass-panel" style="padding: 2rem;">
+                <h3 style="margin-bottom: 1rem;"><i class="ph ph-mask-happy" style="color: var(--secondary-color); margin-right: 8px;"></i>Daily Mood Tracker</h3>
+                <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 1.5rem;">How are you feeling today? Tap an emoji to log your mood.</p>
+                
+                <form method="post" id="mood-form" style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+                    {% csrf_token %}
+                    <input type="hidden" name="mood_score" id="selected-mood" value="3">
+                    
+                    <button type="button" class="mood-btn" data-score="1" title="Very Sad">😢</button>
+                    <button type="button" class="mood-btn" data-score="2" title="Sad">😕</button>
+                    <button type="button" class="mood-btn" data-score="3" title="Neutral">😐</button>
+                    <button type="button" class="mood-btn" data-score="4" title="Happy">🙂</button>
+                    <button type="button" class="mood-btn" data-score="5" title="Very Happy">🤩</button>
+                    
+                    <button type="submit" class="btn btn-primary btn-sm" style="margin-left: 0.5rem; white-space: nowrap;">Log Mood</button>
+                </form>
+            </div>
+
+            <!-- Stress Indicator Card -->
+            <div class="glass-panel" style="padding: 2rem;">
+                <h3 style="margin-bottom: 1rem;"><i class="ph ph-heartbeat" style="color: #ef4444; margin-right: 8px;"></i>Overall Stress Level</h3>
+                <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 1.5rem;">Calculated based on your recent assessments and daily mood.</p>
+                
+                {% if total_assessments > 0 %}
+                <div style="margin-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: 600;">
+                        <span>{{ avg_label }}</span>
+                        <span>{{ avg_score }} / 10</span>
+                    </div>
+                    <div style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
+                        <div id="stress-progress-bar" style="height: 100%; width: calc(({{ avg_score }} / 10) * 100%); transition: width 1s ease-out; border-radius: 999px;"></div>
+                    </div>
+                </div>
+                {% else %}
+                <p style="font-style: italic; color: var(--text-muted); text-align: center;">Take an assessment to see your stress level.</p>
+                {% endif %}
+            </div>
+        </div>
 
         {% if total_assessments > 0 %}
         <!-- Stats Grid -->
@@ -17,16 +61,6 @@
                 <div class="card-content">
                     <h3>{{ total_assessments }}</h3>
                     <p>Total Assessments</p>
-                </div>
-            </div>
-
-            <div class="action-card no-hover">
-                <div class="card-icon" style="background: rgba(51, 136, 173, 0.1); color: var(--secondary-color);">
-                    <i class="ph-fill ph-heart-beat"></i>
-                </div>
-                <div class="card-content">
-                    <h3>{{ avg_score }} / 10</h3>
-                    <p>{{ avg_label }} (Avg)</p>
                 </div>
             </div>
 
@@ -43,20 +77,16 @@
 
         <!-- Trend Chart Section -->
         <div class="glass-panel" style="padding: 2.5rem; margin-bottom: 3rem;">
-            <h3 style="margin-bottom: 2rem; color: var(--text-primary);">Mood Trend (Last 10 Records)</h3>
-            
-            <div class="chart-wrapper" style="display: flex; align-items: flex-end; justify-content: space-between; height: 200px; padding-bottom: 10px; border-bottom: 2px solid var(--secondary-light); gap: 10px;">
-                {% for score in chart_data %}
-                <div class="chart-bar-container" style="flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end;">
-                    <div class="chart-bar" style="width: 80%; background: linear-gradient(to top, var(--primary-color), var(--secondary-color)); border-radius: 6px 6px 0 0; transition: height 0.3s ease; height: calc(({{ score }} / 10) * 100%); position: relative;" title="Score: {{ score }}">
-                        <span style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">{{ score }}</span>
-                    </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h3 style="margin: 0; color: var(--text-primary);">Visualization Trend</h3>
+                <div style="display: flex; gap: 1rem; font-size: 0.85rem;">
+                    <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 12px; background: #79ac9a; border-radius: 2px;"></span> Stress</span>
+                    <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 12px; background: #8db5db; border-radius: 2px;"></span> Mood (Norm)</span>
                 </div>
-                {% endfor %}
             </div>
-            <div style="display: flex; justify-content: space-between; margin-top: 10px; color: var(--text-muted); font-size: 0.85rem;">
-                <span>Oldest</span>
-                <span>Recent</span>
+            
+            <div style="height: 300px;">
+                <canvas id="trendChart"></canvas>
             </div>
         </div>
 
@@ -68,7 +98,7 @@
                     <tr>
                         <th>Date</th>
                         <th>Category</th>
-                        <th>Status</th>
+                        <th>Type</th>
                         <th>Total Score</th>
                     </tr>
                 </thead>
@@ -76,8 +106,8 @@
                     {% for asm in assessments %}
                     <tr>
                         <td style="font-weight: 500;">{{ asm.created_at|date:"M d, Y" }}</td>
-                        <td>Mental Health Check</td>
                         <td><span class="badge badge-{{ asm.category|slugify|lower }}">{{ asm.category }}</span></td>
+                        <td class="text-muted">Mental Health Check</td>
                         <td><strong>{{ asm.total_score }} / 10</strong></td>
                     </tr>
                     {% endfor %}
@@ -106,8 +136,133 @@
         transform: none !important;
         box-shadow: var(--shadow-sm) !important;
     }
-    .chart-bar:hover {
-        opacity: 0.8;
+    .mood-btn {
+        background: transparent;
+        border: 2px solid transparent;
+        font-size: 1.5rem;
+        padding: 5px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .mood-btn:hover {
+        background: var(--bg-color);
+        transform: scale(1.1);
+    }
+    .mood-btn.active {
+        background: var(--primary-light);
+        border-color: var(--primary-color);
+        transform: scale(1.15);
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mood Selection Logic
+        const moodBtns = document.querySelectorAll('.mood-btn');
+        const moodInput = document.getElementById('selected-mood');
+        
+        moodBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                moodBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                moodInput.value = this.dataset.score;
+            });
+            // Set default active based on input value
+            if (btn.dataset.score == moodInput.value) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Stress Progress Bar Logic
+        const stressBar = document.getElementById('stress-progress-bar');
+        if (stressBar) {
+            const score = {{ avg_score|default:0 }};
+            let color = '#10b981'; // green
+            if (score >= 7) {
+                color = '#ef4444'; // red
+            } else if (score >= 4) {
+                color = '#f59e0b'; // yellow
+            }
+            stressBar.style.backgroundColor = color;
+        }
+
+        // Chart.js Logic
+        const ctx = document.getElementById('trendChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {{ chart_labels|safe }},
+                    datasets: [{
+                        label: 'Stress Level',
+                        data: {{ chart_stress_data|safe }},
+                        borderColor: '#79ac9a',
+                        backgroundColor: 'rgba(121, 172, 154, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#79ac9a'
+                    }, {
+                        label: 'Mood Trend (Norm)',
+                        data: {{ chart_mood_data|safe }},
+                        borderColor: '#8db5db',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        pointBackgroundColor: '#8db5db'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: {
+                                stepSize: 2
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#2d3748',
+                            bodyColor: '#4a5568',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

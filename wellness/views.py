@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from .models import Assessment, CounselorRequest, ChatMessage
+from .models import Assessment, CounselorRequest, ChatMessage, DailyMood
 import json
 import traceback
 import os
@@ -141,11 +141,14 @@ def get_chatbot_config():
         "If a user asks about anything unrelated, you MUST politely decline.\n"
         "2. Always be deeply empathetic, professional, and validating.\n"
         "3. Do NOT provide medical diagnoses.\n"
-        "4. Keep responses concise, conversational, and split into small easily readable paragraphs."
+        "4. Keep responses concise and balanced.\n"
+        "5. Always respond in 1 to 2 short paragraphs only and hightligh main points.\n"
+        "6. Do NOT exceed 2 paragraphs.\n"
+        "7. Each paragraph should be clear, simple english, and easy to read."
     )
     return types.GenerateContentConfig(
         system_instruction=system_instruction,
-        max_output_tokens=500,
+        max_output_tokens=800,
         temperature=0.7,
     )
 
@@ -167,17 +170,38 @@ def chatbot_api(request):
                 bot_text = "I'm here for you, but my AI core is currently offline. Please check the API configuration."
             else:
                 try:
-                    # Use the new SDK syntax for generation
-                    response = client.models.generate_content(
-                        model="gemini-flash-latest",
-                        contents=user_text,
-                        config=get_chatbot_config()
-                    )
+                    models_to_try = [
+                        "models/gemini-flash-latest",
+                        "models/gemini-2.5-flash",
+                        "models/gemini-2.5-flash-lite"
+                    ]
                     
-                    if response.text:
-                        bot_text = response.text.strip()
-                    else:
-                        bot_text = "I'm here to listen. Could you tell me more about that?"
+                    bot_text = None
+
+                    for model_name in models_to_try:
+                        try:
+                            response = client.models.generate_content(
+                                model=model_name,
+                                contents=user_text,
+                                config=get_chatbot_config()
+                            )
+
+                            if response.text:
+                                bot_text = response.text.strip()
+                                break
+
+                        except Exception as e:
+                            err_msg = str(e).lower()
+
+                            # If rate limit → try next model
+                            if "quota" in err_msg or "rate limit" in err_msg or "429" in err_msg:
+                                continue
+                            else:
+                                raise e
+
+                    # fallback if all models fail
+                    if not bot_text:
+                        bot_text = "I'm currently busy due to high demand. Please try again later."
                 
                 except Exception as e:
                     # Log full error for server-side debugging
@@ -212,10 +236,14 @@ def chatbot_api(request):
 @login_required
 def counselor_request(request):
     if request.method == 'POST':
-        message = request.POST.get('message', '')
-        if message:
+        subject = request.POST.get('subject', 'General Support')
+        urgency = request.POST.get('urgency', 'Medium')
+        original_message = request.POST.get('message', '')
+        
+        if original_message:
+            message = f"Subject: {subject}\nUrgency: {urgency}\n\n{original_message}"
             CounselorRequest.objects.create(user=request.user, message=message)
-            messages.success(request, "Your request has been submitted. A counselor will reach out to you soon.")
+            messages.success(request, "Request submitted successfully. Status: Pending - We will contact you soon.")
             return redirect('dashboard')
     return render(request, 'wellness/request_counselor.html')
 
@@ -226,23 +254,34 @@ def resources(request):
 
 @login_required
 def progress_view(request):
-    raw_assessments = Assessment.objects.filter(user=request.user).order_by('-created_at')
+    from datetime import date
+    import math
     
-    # Normalize historical data on-the-fly for display
-    # Logic: if record is old (max 18), normalize to 10. 
-    # Since we can't be sure if 3 was 3/18 or 3/10, we'll check the category label 
-    # OR just assume based on a certain date or if the category doesn't contain "Stress" (new ones do)
+    # Handle Daily Mood submission
+    if request.method == 'POST' and 'mood_score' in request.POST:
+        mood_score = int(request.POST.get('mood_score', 3))
+        # Ensure only ONE mood entry per user per day
+        today = date.today()
+        # Check if already submitted today
+        if not DailyMood.objects.filter(user=request.user, created_at__date=today).exists():
+            DailyMood.objects.create(user=request.user, mood_score=mood_score)
+            messages.success(request, "Daily mood logged successfully!")
+        else:
+            # Optionally update the existing entry
+            mood_entry = DailyMood.objects.filter(user=request.user, created_at__date=today).first()
+            mood_entry.mood_score = mood_score
+            mood_entry.save()
+            messages.success(request, "Daily mood updated!")
+        return redirect('progress')
+
+    raw_assessments = Assessment.objects.filter(user=request.user).order_by('-created_at')
     
     assessments = []
     for asm in raw_assessments:
-        # Determine if it's a legacy record
         is_legacy = "Stress" not in asm.category or asm.total_score > 10
-        
         if is_legacy:
-            # Normalize 0-18 to 0-10
             normalized = round(asm.total_score * 10 / 18)
             asm.total_score = normalized
-            # Update label to match new scale for consistency
             if normalized >= 8:
                 asm.category = "High Stress"
             elif normalized >= 4:
@@ -255,13 +294,40 @@ def progress_view(request):
     avg_score = 0
     avg_label = "N/A"
     last_assessment = None
-    chart_data = []
+    chart_stress_data = []
+    chart_mood_data = []
+    chart_labels = []
 
     if total_assessments > 0:
-        total_sum = sum(asm.total_score for asm in assessments)
-        avg_score = round(total_sum / total_assessments, 1)
+        # Weighted Stress Calculation using last 5 assessments
+        recent_5 = assessments[:5]
+        weights = [5, 4, 3, 2, 1]
+        weighted_sum = 0
+        weight_total = 0
+        for i, asm in enumerate(recent_5):
+            weight = weights[i] if i < len(weights) else 1
+            weighted_sum += asm.total_score * weight
+            weight_total += weight
         
-        if avg_score >= 8:
+        base_stress = weighted_sum / weight_total if weight_total > 0 else 0
+        
+        # Mood Adjustment
+        today_mood = DailyMood.objects.filter(user=request.user).order_by('-created_at').first()
+        mood_adjustment = 0
+        if today_mood:
+            mood_val = today_mood.mood_score
+            if mood_val == 1: mood_adjustment = 1.5
+            elif mood_val == 2: mood_adjustment = 1.0
+            elif mood_val == 3: mood_adjustment = 0
+            elif mood_val == 4: mood_adjustment = -0.5
+            elif mood_val == 5: mood_adjustment = -1.0
+            
+        final_stress = base_stress + mood_adjustment
+        
+        # Clamp final stress between 0-10
+        avg_score = round(max(0, min(10, final_stress)), 1)
+        
+        if avg_score >= 7:
             avg_label = "High Stress"
         elif avg_score >= 4:
             avg_label = "Moderate Stress"
@@ -269,8 +335,22 @@ def progress_view(request):
             avg_label = "Low Stress"
         
         last_assessment = assessments[0].created_at
-        recent_assessments = assessments[:10][::-1]
-        chart_data = [asm.total_score for asm in recent_assessments]
+        
+        # Chart Data
+        recent_10_assess = assessments[:10][::-1]
+        chart_stress_data = [asm.total_score for asm in recent_10_assess]
+        chart_labels = [asm.created_at.strftime("%b %d") for asm in recent_10_assess]
+        
+        # Fetch corresponding moods for the chart (for simplicity, we'll get latest 10 moods to overlay)
+        recent_moods = DailyMood.objects.filter(user=request.user).order_by('-created_at')[:10][::-1]
+        
+        # We need a mood value for each chart point, or just pass the recent 10 moods
+        # Let's just create an array of mood scores, normalized for the chart (mood_score * 2)
+        chart_mood_data = [(m.mood_score * 2) for m in recent_moods]
+        
+        # If lengths don't match, just pad mood data with Nones or previous values so Chart.js handles it gracefully
+        while len(chart_mood_data) < len(chart_stress_data):
+            chart_mood_data.insert(0, None)
 
     context = {
         'assessments': assessments,
@@ -278,7 +358,9 @@ def progress_view(request):
         'avg_score': avg_score,
         'avg_label': avg_label,
         'last_assessment': last_assessment,
-        'chart_data': chart_data,
+        'chart_labels': json.dumps(chart_labels),
+        'chart_stress_data': json.dumps(chart_stress_data),
+        'chart_mood_data': json.dumps(chart_mood_data),
     }
     return render(request, 'wellness/progress.html', context)
 

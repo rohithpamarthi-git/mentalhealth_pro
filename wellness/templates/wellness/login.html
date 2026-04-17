@@ -1,4 +1,5 @@
 {% extends 'wellness/base.html' %}
+{% block messages %}{% endblock %}
 {% block content %}
 <style>
     /* Clean overrides for Auth pages */
@@ -72,6 +73,53 @@
     .auth-footer a:hover {
         text-decoration: underline;
     }
+
+    /* Login error banner */
+    .auth-error-banner {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #fff5f5;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.25rem;
+        color: #dc2626;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* Password toggle wrapper */
+    .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .password-wrapper input {
+        width: 100%;
+        padding-right: 2.75rem !important;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 0.75rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        padding: 0;
+        font-size: 1.1rem;
+        transition: color 0.2s;
+    }
+
+    .toggle-password:hover {
+        color: var(--primary-color);
+    }
 </style>
 
 <div class="auth-wrapper">
@@ -86,9 +134,37 @@
         
         <form method="post">
             {% csrf_token %}
+
+            {# --- Error banner: non-field errors OR Django messages ("invalid credentials") --- #}
+            {% if form.non_field_errors %}
+            <div class="auth-error-banner" role="alert">
+                <i class="ph ph-warning-circle"></i>
+                {{ form.non_field_errors.0 }}
+            </div>
+            {% endif %}
+            {% if messages %}
+            {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <div class="auth-error-banner" role="alert">
+                <i class="ph ph-warning-circle"></i>
+                {{ message }}
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+
             {% for field in form %}
                 <div class="form-group">
-                    {{ field }}
+                    {% if field.html_name == 'password' %}
+                    <div class="password-wrapper">
+                        {{ field }}
+                        <button type="button" class="toggle-password" aria-label="Toggle password visibility" data-target="{{ field.auto_id }}">
+                            <i class="ph ph-eye" id="eye-icon-login"></i>
+                        </button>
+                    </div>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
                     {% if field.errors %}
                         <div class="error-text" style="color: #dc2626; font-size: 0.85rem; margin-top: 0.25rem;">
                             {{ field.errors.0 }}
@@ -96,7 +172,7 @@
                     {% endif %}
                 </div>
             {% endfor %}
-            
+
             <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; margin-top: 1rem;">Sign In</button>
         </form>
         
@@ -107,15 +183,32 @@
 </div>
 
 <script>
-    // Automatically set placeholders for the inputs based on field name if not set
     document.addEventListener("DOMContentLoaded", function() {
-        const inputs = document.querySelectorAll('.form-group input');
+        // Set placeholders
+        const inputs = document.querySelectorAll('.form-group input, .password-wrapper input');
         inputs.forEach(input => {
             if (input.name === 'username' && !input.placeholder) {
                 input.placeholder = 'Email';
             } else if (input.name === 'password' && !input.placeholder) {
                 input.placeholder = 'Password';
             }
+        });
+
+        // Password visibility toggle
+        document.querySelectorAll('.toggle-password').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const targetId = btn.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const icon = btn.querySelector('i');
+                if (!input) return;
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'ph ph-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'ph ph-eye';
+                }
+            });
         });
     });
 </script>

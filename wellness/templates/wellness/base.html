@@ -8,7 +8,7 @@
     <meta name="description"
         content="MindCare helps students manage their mental health with AI chat support, assessments, counseling, and wellness resources.">
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -189,6 +189,7 @@
          MAIN CONTENT
     ====================================================== -->
     <main class="main-content container" id="mainContent">
+        {% block messages %}
         {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -196,6 +197,7 @@
             {% endfor %}
         </div>
         {% endif %}
+        {% endblock %}
 
         {% block content %}{% endblock %}
     </main>

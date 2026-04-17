@@ -1,4 +1,5 @@
 {% extends 'wellness/base.html' %}
+{% block messages %}{% endblock %}
 {% block content %}
 <style>
     /* Clean overrides for Auth pages */
@@ -79,6 +80,45 @@
     .auth-footer a:hover {
         text-decoration: underline;
     }
+
+    /* Inline field error (below email) */
+    .field-error {
+        color: #dc2626;
+        font-size: small;
+        margin-top: 5px;
+        display: block;
+        text-align: left;
+    }
+
+    /* Password toggle wrapper */
+    .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .password-wrapper input {
+        width: 100%;
+        padding-right: 2.75rem !important;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 0.75rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        padding: 0;
+        font-size: 1.1rem;
+        transition: color 0.2s;
+    }
+
+    .toggle-password:hover {
+        color: var(--primary-color);
+    }
 </style>
 
 <div class="auth-wrapper">
@@ -97,12 +137,23 @@
                 <input type="text" name="full_name" placeholder="Full Name" required>
             </div>
             <div class="form-group">
-                <input type="email" name="email" placeholder="Email" required>
+                <input type="email" name="email" placeholder="Email" required id="register-email">
+                {# Show "email already exists" error directly below the email field #}
+                {% for message in messages %}
+                {% if message.tags == 'error' %}
+                <span class="field-error" id="email-error-msg">{{ message }}</span>
+                {% endif %}
+                {% endfor %}
             </div>
             <div class="form-group">
-                <input type="password" name="password" placeholder="Password" required>
+                <div class="password-wrapper">
+                    <input type="password" name="password" placeholder="Password" required id="register-password">
+                    <button type="button" class="toggle-password" aria-label="Toggle password visibility" data-target="register-password">
+                        <i class="ph ph-eye" id="eye-icon-register"></i>
+                    </button>
+                </div>
             </div>
-            
+
             <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; margin-top: 1rem;">Create Account</button>
         </form>
         
@@ -111,5 +162,26 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Password visibility toggle
+        document.querySelectorAll('.toggle-password').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const targetId = btn.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const icon = btn.querySelector('i');
+                if (!input) return;
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'ph ph-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'ph ph-eye';
+                }
+            });
+        });
+    });
+</script>
 
 {% endblock %}

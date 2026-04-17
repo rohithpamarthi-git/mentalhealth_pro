@@ -415,16 +415,16 @@ textarea:focus {
    ============================================================== */
 .chat-container {
     max-width: 700px;
-    height: 80vh;
+    height: auto;
     min-height: 500px;
     margin: 2rem auto;
     background: var(--surface-color);
-    border-radius: var(--radius-xl);
+    border-radius: 16px;
     box-shadow: var(--shadow-soft);
     border: 1px solid rgba(121, 172, 154, 0.1);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
 }
 
@@ -443,6 +443,8 @@ textarea:focus {
 
 .chat-messages {
     flex: 1;
+    max-height: 350px;
+    height: auto;
     overflow-y: auto;
     padding: 2rem;
     display: flex;
@@ -461,9 +463,8 @@ textarea:focus {
 }
 
 .message {
-    max-width: 85%;
-    display: flex;
-    flex-direction: column;
+    display: inline-block;
+    max-width: 75%;
 }
 
 .bubble {
@@ -471,6 +472,7 @@ textarea:focus {
     border-radius: var(--radius-md);
     position: relative;
     box-shadow: var(--shadow-soft);
+    word-break: break-word;
 }
 
 .message p {
@@ -478,10 +480,18 @@ textarea:focus {
     padding: 1rem 1.25rem;
     font-size: 1rem;
     line-height: 1.5;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .bot-message {
     align-self: flex-start;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    white-space: normal;
+    word-break: break-word;
 }
 
 .bot-message .bubble {
@@ -1045,12 +1055,13 @@ body.drawer-open {
     max-width: 800px;
     margin: 2rem auto;
     background: var(--surface-solid);
-    border-radius: var(--radius-lg);
+    border-radius: 16px;
     box-shadow: var(--shadow-soft);
     border: 1px solid var(--secondary-light);
     display: flex;
     flex-direction: column;
-    height: 70vh;
+    overflow: visible;
+    height: auto;
     min-height: 500px;
 }
 
@@ -1072,6 +1083,8 @@ body.drawer-open {
 
 .chat-messages {
     flex: 1;
+    max-height: 350px;
+    height: auto;
     padding: 1.5rem;
     overflow-y: auto;
     display: flex;
@@ -1081,9 +1094,8 @@ body.drawer-open {
 
 /* Base message styling for both and the internal bubble p */
 .message {
-    display: flex;
-    flex-direction: column;
-    max-width: 70%;
+    display: inline-block;
+    max-width: 75%;
 }
 
 .message p {
@@ -1093,6 +1105,9 @@ body.drawer-open {
     font-size: 0.95rem;
     line-height: 1.5;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* User Messages */

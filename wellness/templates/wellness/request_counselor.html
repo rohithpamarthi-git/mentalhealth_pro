@@ -1,17 +1,96 @@
 {% extends 'wellness/base.html' %}
 {% block content %}
-<div class="container">
-    <div class="form-container">
-        <h2><i class="ph-fill ph-users" style="color: var(--primary-color); margin-right: 8px; vertical-align: middle;"></i>Request a Counselor</h2>
-        <p>If you're feeling overwhelmed, our professionals are here to help. Send a request, and we will get back to you securely and privately.</p>
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="message">How can we help you?</label>
-                <textarea name="message" id="message" rows="6" class="form-control" placeholder="Share a little bit about what you're going through..."></textarea>
+<div class="container animate-fade-in">
+    <div class="counseling-header" style="margin-bottom: 2.5rem; text-align: center;">
+        <h2 style="font-size: 2.5rem;"><i class="ph-fill ph-users" style="color: var(--primary-color); margin-right: 12px; vertical-align: middle;"></i>Counseling Support</h2>
+        <p class="text-muted" style="font-size: 1.15rem;">We're here to listen and help you through difficult times.</p>
+    </div>
+
+    <!-- Emergency Help Box -->
+    <div class="emergency-box glass-panel" style="border: 2px solid #feb2b2; background: #fff5f5; margin-bottom: 2rem; display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem 2rem;">
+        <div style="background: #fecaca; color: #dc2626; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
+            <i class="ph-fill ph-warning"></i>
+        </div>
+        <div>
+            <h3 style="color: #991b1b; margin: 0; font-size: 1.2rem;">Need urgent help?</h3>
+            <p style="color: #c53030; margin: 0.25rem 0 0;">If you are in immediate crisis, please call the 24/7 Helpline: <strong>988</strong> or contact emergency services.</p>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem;">
+        <!-- Counselor Info -->
+        <aside>
+            <div class="action-card no-hover" style="flex-direction: column; align-items: flex-start; gap: 1rem; height: 100%;">
+                <div class="card-icon" style="background: var(--grad-primary);">
+                    <i class="ph-fill ph-user-circle"></i>
+                </div>
+                <div class="card-content">
+                    <h3 style="margin-bottom: 0.5rem;">Support Team</h3>
+                    <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 1rem;">Our certified counselors are available for private consultations.</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.95rem;">
+                            <i class="ph ph-envelope" style="color: var(--primary-color);"></i>
+                            <span>support@mindcare.com</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.95rem;">
+                            <i class="ph ph-phone" style="color: var(--primary-color);"></i>
+                            <span>+1 (800) 123-4567</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.95rem;">
+                            <i class="ph ph-clock" style="color: var(--primary-color);"></i>
+                            <span>Mon-Fri, 9AM - 6PM</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Request</button>
-        </form>
+        </aside>
+
+        <!-- Request Form -->
+        <div class="glass-panel" style="padding: 2.5rem;">
+            <h3 style="margin-bottom: 1.5rem;"><i class="ph ph-paper-plane-tilt" style="color: var(--primary-color); margin-right: 8px;"></i>Submit a Request</h3>
+            <form method="post">
+                {% csrf_token %}
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label for="subject" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Subject</label>
+                        <select name="subject" id="subject" class="form-control" required>
+                            <option value="General Support">General Support</option>
+                            <option value="Academic Stress">Academic Stress</option>
+                            <option value="Anxiety/Depression">Anxiety/Depression</option>
+                            <option value="Relationship Issues">Relationship Issues</option>
+                            <option value="Personal Growth">Personal Growth</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="urgency" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Urgency</label>
+                        <select name="urgency" id="urgency" class="form-control" required>
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label for="message" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">How can we help you?</label>
+                    <textarea name="message" id="message" rows="5" class="form-control" placeholder="Share as much or as little as you'd like..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: var(--radius-md);">Submit Request</button>
+                <div style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+                    <i class="ph ph-lock" style="vertical-align: middle;"></i> Your data is protected and private.
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<style>
+    .no-hover:hover {
+        transform: none !important;
+        box-shadow: var(--shadow-soft) !important;
+    }
+</style>
 {% endblock %}

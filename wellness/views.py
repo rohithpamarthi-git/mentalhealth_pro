@@ -148,7 +148,7 @@ def get_chatbot_config():
     )
     return types.GenerateContentConfig(
         system_instruction=system_instruction,
-        max_output_tokens=800,
+        max_output_tokens=1000,
         temperature=0.7,
     )
 
